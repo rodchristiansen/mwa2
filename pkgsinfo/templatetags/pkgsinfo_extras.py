@@ -2,7 +2,11 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from distutils.version import LooseVersion
+try:
+    from packaging.version import Version
+except ImportError:
+    from distutils.version import LooseVersion
+    Version = LooseVersion
 
 # Reference for creating custom filters and tags:-
 # https://docs.djangoproject.com/en/dev/howto/custom-template-tags/
@@ -37,7 +41,7 @@ def wrappable_filter(value, autoescape=None):
 def type_is(item, kind):
     """Returns the data type of the item (plist-style)"""
     if kind == 'string':
-        return isinstance(item, basestring)
+        return isinstance(item, str)
     if kind == 'boolean':
         return isinstance(item, bool)
     if kind == 'integer':

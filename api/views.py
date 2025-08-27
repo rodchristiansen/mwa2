@@ -11,7 +11,20 @@ from django.core.exceptions import PermissionDenied
 
 from api.models import Plist, MunkiFile
 from api.models import FileError, FileWriteError, FileReadError, \
-                       FileAlreadyExistsError, \
+                       File            try:
+                response = FileResponse(
+                    open(fullpath, 'rb'),
+                    content_type=mimetypes.guess_type(fullpath)[0])
+                response['Content-Length'] = os.path.getsize(fullpath)
+                response['Content-Disposition'] = (
+                    'attachment; filename="%s"' % os.path.basename(filepath))
+                return response
+            except (IOError, OSError) as err:       response['Content-Disposition'] = (
+                    'attachment; filename="%s"' % os.path.basename(filepath))
+                return response
+            except (IOError, OSError) as err:
+                return HttpResponse(
+                    json.dumps({'result': 'failed',yExistsError, \
                        FileDoesNotExistError, FileDeleteError
 
 from munkiwebadmin.django_basic_auth import logged_in_or_basicauth
@@ -29,7 +42,7 @@ LOGGER = logging.getLogger('munkiwebadmin')
 
 def normalize_value_for_filtering(value):
     '''Converts value to a list of strings'''
-    if isinstance(value, (int, float, bool, basestring, dict)):
+    if isinstance(value, (int, float, bool, str, dict)):
         return [str(value).lower()]
     if isinstance(value, list):
         return [str(item).lower() for item in value]
@@ -40,7 +53,7 @@ def convert_dates_to_strings(plist):
     '''Converts all date objects in a plist to strings. Enables encoding into
     JSON'''
     if isinstance(plist, dict):
-        for key, value in plist.items():
+        for key, value in list(plist.items()):
             if isinstance(value, datetime.datetime):
                 plist[key] = value.isoformat()
             if isinstance(value, (list, dict)):
@@ -61,8 +74,8 @@ def convert_strings_to_dates(jdata):
     iso_date_pattern = re.compile(
         r"^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ*$")
     if isinstance(jdata, dict):
-        for key, value in jdata.items():
-            if ('date' in key.lower() and isinstance(value, basestring)
+        for key, value in list(jdata.items()):
+            if ('date' in key.lower() and isinstance(value, str)
                     and iso_date_pattern.match(value)):
                 jdata[key] = datetime.datetime.strptime(
                     value[:19], "%Y-%m-%dT%H:%M:%S")
@@ -97,13 +110,13 @@ def plist_api(request, kind, filepath=None):
         if filepath:
             try:
                 response = Plist.read(kind, filepath)
-            except FileDoesNotExistError, err:
+            except FileDoesNotExistError as err:
                 return HttpResponse(
                     json.dumps({'result': 'failed',
                                 'exception_type': str(type(err)),
                                 'detail': str(err)}),
                     content_type='application/json', status=404)
-            except FileReadError, err:
+            except FileReadError as err:
                 return HttpResponse(
                     json.dumps({'result': 'failed',
                                 'exception_type': str(type(err)),
@@ -113,9 +126,9 @@ def plist_api(request, kind, filepath=None):
                 response = convert_dates_to_strings(response)
         else:
             filter_terms = request.GET.copy()
-            if '_' in filter_terms.keys():
+            if '_' in list(filter_terms.keys()):
                 del filter_terms['_']
-            if 'api_fields' in filter_terms.keys():
+            if 'api_fields' in list(filter_terms.keys()):
                 api_fields = filter_terms['api_fields'].split(',')
                 del filter_terms['api_fields']
             else:
@@ -124,10 +137,10 @@ def plist_api(request, kind, filepath=None):
             response = []
             for item_name in item_list:
                 if (api_fields == ['filename']
-                        and filter_terms.keys() in ([], ['filename'])):
+                        and list(filter_terms.keys()) in ([], ['filename'])):
                     # don't read each manifest if all we want is filenames
                     plist = {'filename': item_name}
-                    if 'filename' in filter_terms.keys():
+                    if 'filename' in list(filter_terms.keys()):
                         if filter_terms['filename'].lower() not in item_name:
                             continue
                     response.append(plist)
@@ -140,7 +153,7 @@ def plist_api(request, kind, filepath=None):
                         plist = {'contents': plist}
                     plist['filename'] = item_name
                     matches_filters = True
-                    for key, value in filter_terms.items():
+                    for key, value in list(filter_terms.items()):
                         if key not in plist:
                             matches_filters = False
                             continue
@@ -154,7 +167,7 @@ def plist_api(request, kind, filepath=None):
                     if matches_filters:
                         if api_fields:
                             # filter to just the requested fields
-                            plist = {key: plist[key] for key in plist.keys()
+                            plist = {key: plist[key] for key in list(plist.keys())
                                      if key in api_fields}
                         response.append(plist)
         if response_type == 'json':
@@ -164,7 +177,7 @@ def plist_api(request, kind, filepath=None):
             return HttpResponse(plistlib.writePlistToString(response),
                                 content_type='application/xml')
 
-    if request.META.has_key('HTTP_X_METHODOVERRIDE'):
+    if 'HTTP_X_METHODOVERRIDE' in request.META:
         # support browsers/libs that don't directly support the other verbs
         http_method = request.META['HTTP_X_METHODOVERRIDE']
         if http_method.lower() == 'put':
@@ -217,20 +230,20 @@ def plist_api(request, kind, filepath=None):
             del request_data['filename']
         try:
             Plist.new(kind, filepath, request.user, plist_data=request_data)
-        except FileAlreadyExistsError, err:
+        except FileAlreadyExistsError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
                             'detail': str(err)}),
                 content_type='application/json',
                 status=409)
-        except FileWriteError, err:
+        except FileWriteError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
                             'detail': str(err)}),
                 content_type='application/json', status=403)
-        except FileError, err:
+        except FileError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
@@ -284,7 +297,7 @@ def plist_api(request, kind, filepath=None):
         try:
             data = plistlib.writePlistToString(request_data)
             Plist.write(data, kind, filepath, request.user)
-        except FileError, err:
+        except FileError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
@@ -341,7 +354,7 @@ def plist_api(request, kind, filepath=None):
         try:
             data = plistlib.writePlistToString(plist_data)
             Plist.write(data, kind, filepath, request.user)
-        except FileError, err:
+        except FileError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
@@ -378,19 +391,19 @@ def plist_api(request, kind, filepath=None):
                 content_type='application/json', status=403)
         try:
             Plist.delete(kind, filepath, request.user)
-        except FileDoesNotExistError, err:
+        except FileDoesNotExistError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
                             'detail': str(err)}),
                 content_type='application/json', status=404)
-        except FileDeleteError, err:
+        except FileDeleteError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
                             'detail': str(err)}),
                 content_type='application/json', status=403)
-        except FileError, err:
+        except FileError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
@@ -430,7 +443,7 @@ def file_api(request, kind, filepath=None):
                 response['Content-Disposition'] = (
                     'attachment; filename="%s"' % os.path.basename(filepath))
                 return response
-            except (IOError, OSError), err:
+            except (IOError, OSError) as err:
                 return HttpResponse(
                     json.dumps({'result': 'failed',
                                 'exception_type': str(type(err)),
@@ -445,7 +458,7 @@ def file_api(request, kind, filepath=None):
                 return HttpResponse(plistlib.writePlistToString(response),
                                     content_type='application/xml')
 
-    if request.META.has_key('HTTP_X_METHODOVERRIDE'):
+    if 'HTTP_X_METHODOVERRIDE' in request.META:
         # support browsers/libs that don't directly support the other verbs
         http_method = request.META['HTTP_X_METHODOVERRIDE']
         if http_method.lower() == 'put':
@@ -484,7 +497,7 @@ def file_api(request, kind, filepath=None):
                 MunkiFile.new(kind, filedata, filename, request.user)
             else:
                 MunkiFile.writedata(kind, filedata, filename, request.user)
-        except FileError, err:
+        except FileError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
@@ -518,19 +531,19 @@ def file_api(request, kind, filepath=None):
                 content_type='application/json', status=403)
         try:
             MunkiFile.delete(kind, filepath, request.user)
-        except FileDoesNotExistError, err:
+        except FileDoesNotExistError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
                             'detail': str(err)}),
                 content_type='application/json', status=404)
-        except FileDeleteError, err:
+        except FileDeleteError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
                             'detail': str(err)}),
                 content_type='application/json', status=403)
-        except FileError, err:
+        except FileError as err:
             return HttpResponse(
                 json.dumps({'result': 'failed',
                             'exception_type': str(type(err)),
