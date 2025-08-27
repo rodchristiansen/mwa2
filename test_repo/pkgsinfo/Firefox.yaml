@@ -1,0 +1,13 @@
+---
+name: Firefox
+display_name: Mozilla Firefox
+version: "130.0"
+catalogs:
+  - development
+  - testing
+  - production
+description: Mozilla Firefox web browser
+developer: Mozilla
+category: Internet
+uninstallable: true
+minimum_os_version: "10.14"

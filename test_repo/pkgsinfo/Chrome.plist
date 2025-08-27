@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>name</key>
+    <string>Chrome</string>
+    <key>display_name</key>
+    <string>Google Chrome</string>
+    <key>version</key>
+    <string>129.0.6668.100</string>
+    <key>catalogs</key>
+    <array>
+        <string>development</string>
+        <string>testing</string>
+        <string>production</string>
+    </array>
+    <key>description</key>
+    <string>Google Chrome web browser</string>
+    <key>developer</key>
+    <string>Google</string>
+    <key>category</key>
+    <string>Internet</string>
+    <key>uninstallable</key>
+    <true/>
+</dict>
+</plist>

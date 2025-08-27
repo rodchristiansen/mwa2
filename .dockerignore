@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.venv
+venv/
+env/
+
+# Django
+*.log
+db.sqlite3
+.env
+
+# Development
+.DS_Store
+.vscode
+.idea
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+*.md
+!IMPLEMENTATION_COMPLETE.md

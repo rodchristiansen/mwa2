@@ -1,0 +1,179 @@
+---
+name: Microsoft_Office_365
+display_name: Microsoft Office 365 Enterprise
+version: "16.80.24081116"
+catalogs:
+  - production
+  - testing
+description: |
+  Microsoft Office 365 Enterprise suite including Word, Excel, PowerPoint,
+  Outlook, OneNote, and Teams. Cloud-connected productivity suite with
+  real-time collaboration features.
+developer: Microsoft Corporation
+category: Productivity
+uninstallable: true
+minimum_os_version: "11.0"
+maximum_os_version: "15.0"
+
+# Complex installer with multiple components
+installer_type: package
+installer_choices_xml:
+  - attributeSetting: 1
+    choiceAttribute: selected
+    choiceIdentifier: com.microsoft.office.word
+  - attributeSetting: 1
+    choiceAttribute: selected  
+    choiceIdentifier: com.microsoft.office.excel
+  - attributeSetting: 1
+    choiceAttribute: selected
+    choiceIdentifier: com.microsoft.office.powerpoint
+  - attributeSetting: 1
+    choiceAttribute: selected
+    choiceIdentifier: com.microsoft.office.outlook
+  - attributeSetting: 0
+    choiceAttribute: selected
+    choiceIdentifier: com.microsoft.office.onenote
+
+# Multiple application installs
+installs:
+  - path: /Applications/Microsoft Word.app
+    type: application
+    CFBundleIdentifier: com.microsoft.Word
+    CFBundleVersion: "16.80.24081116"
+    CFBundleShortVersionString: "16.80"
+    minosversion: "11.0"
+  - path: /Applications/Microsoft Excel.app
+    type: application
+    CFBundleIdentifier: com.microsoft.Excel
+    CFBundleVersion: "16.80.24081116"
+    CFBundleShortVersionString: "16.80"
+    minosversion: "11.0"
+  - path: /Applications/Microsoft PowerPoint.app
+    type: application
+    CFBundleIdentifier: com.microsoft.Powerpoint
+    CFBundleVersion: "16.80.24081116"
+    CFBundleShortVersionString: "16.80"
+    minosversion: "11.0"
+  - path: /Applications/Microsoft Outlook.app
+    type: application
+    CFBundleIdentifier: com.microsoft.Outlook
+    CFBundleVersion: "16.80.24081116"
+    CFBundleShortVersionString: "16.80"
+    minosversion: "11.0"
+
+# Complex dependency chain
+requires:
+  - Microsoft_AutoUpdate
+  - Microsoft_Licensing_Helper
+update_for:
+  - Microsoft_Office_2019
+  - Microsoft_Office_2021
+
+# Extensive blocking applications
+blocking_applications:
+  - Microsoft Word
+  - Microsoft Excel  
+  - Microsoft PowerPoint
+  - Microsoft Outlook
+  - Microsoft OneNote
+  - Microsoft Teams
+  - Microsoft AutoUpdate
+
+# Enterprise configuration
+enterprise_settings:
+  tenant_id: "12345678-1234-1234-1234-123456789012"
+  organization_name: "Acme Corporation"
+  auto_signin: true
+  disable_personal_onedrive: true
+  office_activation_email_address: "admin@acme.com"
+
+# Conditional items based on architecture
+conditional_items:
+  - condition: "machine.os_vers >= '12.0' and machine.arch == 'arm64'"
+    managed_installs:
+      - Microsoft_Rosetta2_Support
+  - condition: "machine.munki_version >= '6.0'"
+    managed_updates:
+      - Microsoft_Office_365_Monthly_Updates
+
+# Installation environment variables
+environment_variables:
+  OFFICE_EULA_ACCEPTED: "1"
+  OFFICE_ACTIVATION_TYPE: "SharedComputerLicensing"
+  OFFICE_TELEMETRY_DISABLED: "1"
+  OFFICE_UPDATE_CHANNEL: "MonthlyEnterprise"
+
+# Custom installation paths for different components
+custom_paths:
+  microsoft_word: /Applications/Microsoft Word.app
+  microsoft_excel: /Applications/Microsoft Excel.app
+  microsoft_powerpoint: /Applications/Microsoft PowerPoint.app
+  microsoft_outlook: /Applications/Microsoft Outlook.app
+  shared_resources: /Library/Application Support/Microsoft/Office365
+  user_templates: /Users/Shared/Microsoft Office Templates
+
+# Localization support
+supported_languages:
+  - en-US
+  - es-ES
+  - fr-FR
+  - de-DE
+  - it-IT
+  - pt-BR
+  - ja-JP
+  - ko-KR
+
+# License management
+license_required: true
+license_type: "volume"
+license_seats: 500
+license_expiration: "2025-12-31"
+
+# Advanced deployment options
+deployment_options:
+  silent_install: true
+  restart_required: false
+  install_during_maintenance_window: true
+  maintenance_window_start: "02:00"
+  maintenance_window_end: "06:00"
+  maximum_install_time: 3600  # seconds
+
+# Detailed uninstall information
+uninstall_method: "/Library/Application Support/Microsoft/Office365/uninstall_office.sh"
+uninstall_script: |
+  #!/bin/bash
+  # Comprehensive Office 365 removal
+  
+  # Remove applications
+  rm -rf "/Applications/Microsoft Word.app"
+  rm -rf "/Applications/Microsoft Excel.app" 
+  rm -rf "/Applications/Microsoft PowerPoint.app"
+  rm -rf "/Applications/Microsoft Outlook.app"
+  
+  # Remove support files
+  rm -rf "/Library/Application Support/Microsoft/Office365"
+  rm -rf "/Library/Preferences/com.microsoft.office*"
+  
+  # Remove user data (optional)
+  # rm -rf "/Users/*/Library/Group Containers/UBF8T346G9.Office"
+  
+  echo "Microsoft Office 365 uninstalled successfully"
+
+# Monitoring and reporting
+reporting_metadata:
+  installation_id: "office365-enterprise-deployment"
+  cost_center: "IT-Software-Licenses"
+  business_unit: "Corporate"
+  compliance_required: true
+  audit_trail: true
+
+notes: |
+  Enterprise deployment of Microsoft Office 365 with:
+  - Shared computer licensing for lab environments
+  - Disabled personal OneDrive integration
+  - Centralized update management
+  - Comprehensive telemetry controls
+  - Custom enterprise branding and templates
+  
+  Requires active Office 365 Enterprise subscription and network
+  connectivity for initial activation and periodic license validation.

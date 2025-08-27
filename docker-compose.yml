@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mwa2-yaml:
+    build: .
+    container_name: mwa2-yaml-demo
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./test_repo:/app/test_repo:ro
+      - ./media:/app/media
+    environment:
+      - DJANGO_SETTINGS_MODULE=dev_settings
+      - MUNKI_REPO_ROOT=/app/test_repo
+      - PREFER_YAML_FORMAT=True
+      - SHOW_FILE_FORMAT_INFO=True
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mwa2.rule=Host(`localhost`)"
+      - "traefik.http.services.mwa2.loadbalancer.server.port=8001"
+
+  # Optional: Add a simple reverse proxy for production-like setup
+  nginx:
+    image: nginx:alpine
+    container_name: mwa2-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/usr/share/nginx/html/static:ro
+    depends_on:
+      - mwa2-yaml
+    restart: unless-stopped
+
+networks:
+  default:
+    name: mwa2-network

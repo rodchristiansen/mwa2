@@ -1,0 +1,438 @@
+---
+name: Development_Environment_Complete
+display_name: Complete Development Environment Suite
+version: "2024.3.1"
+catalogs:
+  - development
+  - engineering
+description: |
+  Comprehensive development environment including IDEs, compilers, 
+  runtime environments, version control, containerization tools,
+  and deployment utilities for full-stack development.
+developer: DevOps Engineering Team
+category: Developer Tools
+uninstallable: true
+minimum_os_version: "12.0"
+
+# Complex multi-tool installation
+installer_type: composite
+installation_phases:
+  - phase: "Prerequisites"
+    components:
+      - Xcode_Command_Line_Tools
+      - Homebrew_Package_Manager
+      - Git_Version_Control
+  - phase: "Runtime_Environments" 
+    components:
+      - Python_Development_Stack
+      - Node_JavaScript_Runtime
+      - Go_Programming_Language
+      - Rust_Systems_Programming
+  - phase: "Development_Tools"
+    components:
+      - Visual_Studio_Code
+      - IntelliJ_IDEA_Ultimate
+      - Docker_Desktop
+      - Kubernetes_Tools
+  - phase: "Database_Tools"
+    components:
+      - PostgreSQL_Database
+      - Redis_Cache_Server
+      - MongoDB_Document_Database
+
+# Extensive tool installations
+installs:
+  # IDEs and Editors
+  - path: /Applications/Visual Studio Code.app
+    type: application
+    CFBundleIdentifier: com.microsoft.VSCode
+    CFBundleVersion: "1.92.0"
+  - path: /Applications/IntelliJ IDEA.app
+    type: application  
+    CFBundleIdentifier: com.jetbrains.intellij
+    CFBundleVersion: "2024.2.1"
+  
+  # Development Runtimes
+  - path: /usr/local/bin/python3.12
+    type: file
+    version: "3.12.5"
+    symlink_target: /usr/local/Cellar/python@3.12/3.12.5/bin/python3.12
+  - path: /usr/local/bin/node
+    type: file
+    version: "20.16.0"
+    symlink_target: /usr/local/Cellar/node/20.16.0/bin/node
+  - path: /usr/local/bin/go
+    type: file
+    version: "1.23.0"
+    symlink_target: /usr/local/go/bin/go
+  - path: /usr/local/bin/rustc
+    type: file
+    version: "1.80.0"
+    symlink_target: /home/rust/.cargo/bin/rustc
+    
+  # Containerization Tools
+  - path: /Applications/Docker.app
+    type: application
+    CFBundleIdentifier: com.docker.docker
+    CFBundleVersion: "4.32.0"
+  - path: /usr/local/bin/kubectl
+    type: file
+    version: "1.30.3"
+  - path: /usr/local/bin/helm
+    type: file  
+    version: "3.15.3"
+    
+  # Database Tools
+  - path: /usr/local/bin/postgres
+    type: file
+    version: "16.4"
+  - path: /usr/local/bin/redis-server
+    type: file
+    version: "7.4.0"
+  - path: /usr/local/bin/mongod
+    type: file
+    version: "7.0.12"
+
+# Complex dependency management
+requires:
+  - Xcode_Command_Line_Tools
+  - Homebrew_Base_Installation
+  - Apple_Silicon_Rosetta2  # for x86 compatibility
+  - Corporate_Development_Certificates
+
+# Development environment conflicts
+blocking_applications:
+  - Xcode  # May conflict with command line tools
+  - Android Studio  # Resource conflicts with IntelliJ
+  - Eclipse  # IDE conflicts
+
+# Environment-specific configuration
+development_environment:
+  # Python development setup
+  python_configuration:
+    default_version: "3.12"
+    virtual_environments: true
+    pip_packages:
+      - requests
+      - fastapi
+      - django
+      - pytest
+      - black
+      - flake8
+      - mypy
+    jupyter_notebook: true
+    
+  # Node.js development setup  
+  nodejs_configuration:
+    default_version: "20.16.0"
+    package_manager: npm
+    global_packages:
+      - typescript
+      - "@vue/cli"
+      - "@angular/cli"
+      - react-scripts
+      - eslint
+      - prettier
+      - nodemon
+    
+  # Go development setup
+  go_configuration:
+    version: "1.23.0"
+    gopath: "/Users/Shared/go"
+    modules: true
+    common_tools:
+      - github.com/air-verse/air  # live reload
+      - github.com/golangci/golangci-lint  # linting
+      - golang.org/x/tools/gopls  # language server
+      
+  # Rust development setup
+  rust_configuration:
+    version: "1.80.0"
+    cargo_packages:
+      - cargo-watch
+      - cargo-edit
+      - rustfmt
+      - clippy
+
+# Database initialization and configuration
+database_setup:
+  postgresql:
+    version: "16.4"
+    data_directory: "/usr/local/var/postgres"
+    port: 5432
+    max_connections: 100
+    shared_buffers: "256MB"
+    default_databases:
+      - development_db
+      - test_db
+    default_users:
+      - username: developer
+        password: dev_password_123
+        permissions: all
+        
+  redis:
+    version: "7.4.0"
+    port: 6379
+    max_memory: "256mb"
+    persistence: true
+    config_file: "/usr/local/etc/redis.conf"
+    
+  mongodb:
+    version: "7.0.12"  
+    port: 27017
+    data_directory: "/usr/local/var/mongodb"
+    log_directory: "/usr/local/var/log/mongodb"
+
+# IDE and editor configurations
+ide_configurations:
+  vscode_extensions:
+    - ms-python.python
+    - ms-vscode.vscode-typescript-next
+    - golang.go
+    - rust-lang.rust-analyzer
+    - ms-vscode.docker
+    - ms-kubernetes-tools.vscode-kubernetes-tools
+    - esbenp.prettier-vscode
+    - ms-vscode.vscode-json
+    
+  vscode_settings:
+    editor.fontSize: 14
+    editor.tabSize: 2
+    editor.insertSpaces: true
+    files.autoSave: "afterDelay"
+    terminal.integrated.fontSize: 12
+    
+  intellij_plugins:
+    - Docker
+    - Kubernetes
+    - Database Tools and SQL
+    - Git Integration
+    - Python
+    - Go
+    - Rust
+
+# Container and orchestration setup
+containerization_setup:
+  docker_configuration:
+    memory_limit: "4GB"
+    cpu_limit: "2"
+    storage_driver: overlay2
+    default_networks:
+      - development
+      - testing
+    common_images:
+      - nginx:latest
+      - postgres:16
+      - redis:7-alpine
+      - node:20-alpine
+      - python:3.12-slim
+      
+  kubernetes_setup:
+    local_cluster: minikube
+    cluster_memory: "4GB"
+    cluster_cpus: "2"
+    default_namespaces:
+      - development
+      - testing
+      - monitoring
+
+# Development workflow tools
+workflow_tools:
+  version_control:
+    git_config:
+      user.name: "Developer"
+      user.email: "developer@corp.internal"
+      core.editor: "code --wait"
+      pull.rebase: false
+      init.defaultBranch: main
+      
+  package_managers:
+    homebrew_formulas:
+      - wget
+      - curl
+      - jq
+      - tree
+      - htop
+      - fzf
+      - ripgrep
+      - bat
+      - fd
+      
+    homebrew_casks:
+      - postman
+      - insomnia
+      - tableplus
+      - sourcetree
+      - github-desktop
+
+# Performance and resource management
+resource_management:
+  memory_allocation:
+    docker: "4GB"
+    intellij: "2GB" 
+    vscode: "1GB"
+    databases: "2GB"
+    system_reserve: "4GB"
+    
+  cpu_allocation:
+    development_tools: "70%"
+    background_services: "20%"
+    system_reserve: "10%"
+    
+  storage_allocation:
+    applications: "15GB"
+    development_projects: "50GB"
+    databases: "10GB"
+    containers: "20GB"
+    cache_temp: "5GB"
+
+# Security and compliance for development
+security_configuration:
+  code_signing:
+    apple_developer_certificates: true
+    code_signing_identity: "Developer ID Application"
+    
+  secrets_management:
+    environment_variables: encrypted
+    api_keys: keychain_storage
+    database_passwords: keychain_storage
+    
+  network_security:
+    local_development_firewall: true
+    container_network_isolation: true
+    database_access_restrictions: localhost_only
+
+# Monitoring and maintenance
+monitoring_setup:
+  resource_monitoring: true
+  performance_profiling: true
+  error_tracking: true
+  log_aggregation: true
+  
+  maintenance_schedule:
+    package_updates: weekly
+    cache_cleanup: daily
+    log_rotation: daily
+    dependency_security_scan: daily
+
+# Custom development scripts and utilities
+custom_utilities:
+  development_scripts:
+    - name: "dev-setup"
+      path: "/usr/local/bin/dev-setup"
+      description: "Initialize new development projects"
+    - name: "db-reset"
+      path: "/usr/local/bin/db-reset" 
+      description: "Reset development databases"
+    - name: "docker-cleanup"
+      path: "/usr/local/bin/docker-cleanup"
+      description: "Clean up Docker containers and images"
+    - name: "env-switch"
+      path: "/usr/local/bin/env-switch"
+      description: "Switch between development environments"
+
+postinstall_script: |
+  #!/bin/bash
+  
+  echo "Configuring Complete Development Environment..."
+  
+  # Initialize Homebrew and install essential packages
+  /opt/homebrew/bin/brew update
+  /opt/homebrew/bin/brew install git wget curl jq tree htop
+  
+  # Configure Git globally
+  git config --global user.name "Developer"
+  git config --global user.email "developer@corp.internal"
+  git config --global core.editor "code --wait"
+  
+  # Initialize Python virtual environment
+  python3.12 -m venv /usr/local/var/python-dev-env
+  source /usr/local/var/python-dev-env/bin/activate
+  pip install --upgrade pip setuptools wheel
+  pip install requests fastapi django pytest black flake8 mypy jupyter
+  
+  # Install Node.js global packages
+  npm install -g typescript @vue/cli @angular/cli react-scripts eslint prettier nodemon
+  
+  # Initialize Go workspace
+  mkdir -p /Users/Shared/go/{bin,src,pkg}
+  export GOPATH=/Users/Shared/go
+  go install github.com/air-verse/air@latest
+  go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+  
+  # Install Rust development tools
+  rustup component add rustfmt clippy
+  cargo install cargo-watch cargo-edit
+  
+  # Initialize databases
+  brew services start postgresql@16
+  brew services start redis
+  brew services start mongodb-community
+  
+  # Create development databases
+  sleep 5  # Wait for PostgreSQL to start
+  createdb development_db
+  createdb test_db
+  
+  # Configure VSCode extensions
+  code --install-extension ms-python.python
+  code --install-extension ms-vscode.vscode-typescript-next
+  code --install-extension golang.go
+  code --install-extension rust-lang.rust-analyzer
+  code --install-extension ms-vscode.docker
+  
+  # Start Docker Desktop
+  open /Applications/Docker.app
+  
+  # Create development project directories
+  mkdir -p /Users/Shared/Development/{python,nodejs,go,rust,docker,kubernetes}
+  chmod -R 755 /Users/Shared/Development
+  
+  echo "Development environment setup completed!"
+  echo "Available tools:"
+  echo "  - Python 3.12 with common packages"
+  echo "  - Node.js 20.16.0 with TypeScript and frameworks"
+  echo "  - Go 1.23.0 with development tools"  
+  echo "  - Rust 1.80.0 with Cargo tools"
+  echo "  - PostgreSQL, Redis, and MongoDB databases"
+  echo "  - Docker Desktop and Kubernetes tools"
+  echo "  - VSCode and IntelliJ IDEA with plugins"
+
+notes: |
+  COMPREHENSIVE DEVELOPMENT ENVIRONMENT SUITE
+  
+  This package provides a complete, ready-to-use development environment
+  including multiple programming languages, databases, containerization
+  tools, and IDEs configured for enterprise development workflows.
+  
+  INCLUDED COMPONENTS:
+  
+  Programming Languages & Runtimes:
+  - Python 3.12 with virtual environments and common packages
+  - Node.js 20.16.0 with npm and TypeScript support
+  - Go 1.23.0 with modules and development tools
+  - Rust 1.80.0 with Cargo and toolchain
+  
+  Development Tools:
+  - Visual Studio Code with essential extensions
+  - IntelliJ IDEA Ultimate with plugins
+  - Git with corporate configuration
+  - Docker Desktop with common images
+  - Kubernetes tools (kubectl, helm, minikube)
+  
+  Databases & Services:
+  - PostgreSQL 16.4 with development databases
+  - Redis 7.4.0 for caching and sessions
+  - MongoDB 7.0.12 for document storage
+  
+  Resource Requirements:
+  - Minimum 16GB RAM (32GB recommended)
+  - 100GB available disk space
+  - macOS 12.0 or later
+  - Apple Silicon or Intel processor
+  
+  Post-installation, developers will have access to a fully configured
+  environment ready for full-stack development, containerized applications,
+  and modern development workflows.
+  
+  For development support: devops-team@corp.internal

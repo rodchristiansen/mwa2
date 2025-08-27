@@ -1,0 +1,112 @@
+---
+name: Adobe_Creative_Suite
+display_name: Adobe Creative Suite 2024
+version: "24.1.0"
+catalogs:
+  - development
+  - testing
+  - production
+description: |
+  Adobe Creative Suite 2024 includes Photoshop, Illustrator, InDesign, 
+  Premiere Pro, After Effects, and more. Professional creative tools 
+  for design, video, and web development.
+developer: Adobe Systems Inc.
+category: Graphics & Design
+uninstallable: true
+minimum_os_version: "12.0"
+maximum_os_version: "15.0"
+
+# Complex installer configuration
+installer_type: copy_from_dmg
+installs:
+  - path: /Applications/Adobe Photoshop 2024/Adobe Photoshop 2024.app
+    type: application
+    CFBundleIdentifier: com.adobe.Photoshop
+    CFBundleVersion: "25.4.0"
+    CFBundleShortVersionString: "2024"
+  - path: /Applications/Adobe Illustrator 2024/Adobe Illustrator 2024.app
+    type: application
+    CFBundleIdentifier: com.adobe.illustrator
+    CFBundleVersion: "28.2.0"
+    CFBundleShortVersionString: "2024"
+  - path: /Applications/Adobe InDesign 2024/Adobe InDesign 2024.app
+    type: application
+    CFBundleIdentifier: com.adobe.InDesign
+    CFBundleVersion: "19.1.0"
+    CFBundleShortVersionString: "2024"
+
+# Prerequisites and dependencies
+requires:
+  - AdobeCreativeCloudDesktop
+  - AdobeLicensing
+update_for:
+  - Adobe_Creative_Suite_2023
+
+# Advanced blocking applications
+blocking_applications:
+  - Adobe Photoshop 2024
+  - Adobe Illustrator 2024
+  - Adobe InDesign 2024
+  - Adobe Premiere Pro 2024
+  - Adobe After Effects 2024
+
+# License and deployment info
+license_required: true
+supported_architectures:
+  - x86_64
+  - arm64
+
+# Post-installation scripts
+postinstall_script: |
+  #!/bin/bash
+  # Configure Adobe licensing
+  /usr/local/bin/adobe-licensing-helper --activate
+  
+  # Set organization preferences
+  defaults write com.adobe.CSXS.11 LogLevel -int 1
+  defaults write com.adobe.CSXS.11 PlayerDebugMode -int 0
+  
+  # Create shared workspace
+  mkdir -p "/Users/Shared/Adobe Workspace"
+  chmod 755 "/Users/Shared/Adobe Workspace"
+
+preinstall_script: |
+  #!/bin/bash
+  # Check available disk space (requires 15GB)
+  available_space=$(df -g /Applications | tail -1 | awk '{print $4}')
+  if [ "$available_space" -lt 15 ]; then
+    echo "Insufficient disk space. Need at least 15GB."
+    exit 1
+  fi
+  
+  # Kill existing Adobe processes
+  killall "Adobe Desktop Service" 2>/dev/null || true
+  killall "Creative Cloud" 2>/dev/null || true
+
+# Additional metadata
+receipt_metadata:
+  - receipt_type: application
+    path: /Applications/Adobe Photoshop 2024/Adobe Photoshop 2024.app
+    packageid: com.adobe.pkg.Photoshop2024
+    version: "25.4.0"
+  - receipt_type: application
+    path: /Applications/Adobe Illustrator 2024/Adobe Illustrator 2024.app
+    packageid: com.adobe.pkg.Illustrator2024
+    version: "28.2.0"
+
+# Force installation options
+force_install_after_date: 2024-12-01T00:00:00Z
+autoremove: false
+unattended_install: false
+suppress_bundle_relocation: true
+
+# Notes for administrators
+notes: |
+  Complex installation requiring:
+  - Active Adobe Creative Cloud subscription
+  - Administrator privileges for installation
+  - Network connectivity for license validation
+  - Minimum 15GB available disk space
+  
+  This package installs the full Creative Suite and configures
+  organization-specific settings and shared workspaces.
