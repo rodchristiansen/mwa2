@@ -7,7 +7,11 @@ import os
 import logging
 import plistlib
 from collections import defaultdict
-from distutils.version import LooseVersion
+try:
+    from distutils.version import LooseVersion
+except ImportError:
+    # Python 3.12+ removed distutils
+    from packaging.version import Version as LooseVersion
 from multiprocessing.pool import ThreadPool
 from xml.parsers.expat import ExpatError
 
@@ -91,9 +95,6 @@ class Pkginfo(Plist):
     @classmethod
     def data(cls):
         '''Returns a structure with itemnames, versions, and filepaths'''
-        def compare_versions(a, b):
-            """Internal comparison function for use in sorting"""
-            return cmp(LooseVersion(b[0]), LooseVersion(a[0]))
         record(message='Starting scan of pkgsinfo data')
         files = cls.list('pkgsinfo')
         record(message='Processing %s files' % len(files))
@@ -130,7 +131,8 @@ class Pkginfo(Plist):
                 pathname = files[index]
                 pkginfo_dict[name].append((version, catalogs, pathname))
         for key in pkginfo_dict.keys():
-            pkginfo_dict[key].sort(compare_versions)
+            # Sort by version in descending order (newest first)
+            pkginfo_dict[key].sort(key=lambda x: LooseVersion(x[0]), reverse=True)
         LOGGER.debug('Sorted pkgsinfo dict')
 
         # now convert to a list of lists
@@ -162,13 +164,13 @@ class Pkginfo(Plist):
                     delete_this_pkg = True
             try:
                 cls.delete('pkgsinfo', pathname, user)
-            except FileDeleteError, err:
+            except FileDeleteError as err:
                 errors.append('Error %s when removing %s' % (err, pathname))
             else:
                 if delete_this_pkg:
                     try:
                         MunkiFile.delete('pkgs', pkg_path, user)
-                    except FileDeleteError, err:
+                    except FileDeleteError as err:
                         errors.append('Error %s when removing %s'
                                       % (err, pkg_path))
         if errors:
@@ -212,7 +214,7 @@ class Pkginfo(Plist):
                 data = plistlib.writePlistToString(plist)
                 try:
                     cls.write(data, 'pkgsinfo', pathname, user)
-                except FileWriteError, err:
+                except FileWriteError as err:
                     LOGGER.error('Update failed for %s: %s', pathname, err)
                     errors.append('Error %s when updating %s' % (err, pathname))
                     continue
