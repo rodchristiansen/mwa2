@@ -246,3 +246,11 @@ MAKECATALOGS_PATH = '/usr/local/munki/makecatalogs'
 # if GITPATH is undefined or None MunkiWebAdmin will not attempt to do a git add
 # or commit
 #GIT_PATH = '/usr/bin/git'
+
+# YAML Support Settings
+# Set to True to prefer YAML format for new files when extension is ambiguous
+# Users can still create/edit files in either format
+PREFER_YAML_FORMAT = False
+
+# Set to True to show format information in the UI
+SHOW_FILE_FORMAT_INFO = True
