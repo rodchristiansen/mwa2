@@ -1,0 +1,8 @@
+catalogs:
+  - development
+managed_installs:
+  - Firefox
+  - Chrome
+  - VSCode
+  - Slack
+optional_installs: []

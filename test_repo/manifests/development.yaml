@@ -1,0 +1,13 @@
+---
+catalogs:
+  - development
+  - testing
+managed_installs:
+  - Firefox
+  - Chrome
+  - VSCode
+optional_installs:
+  - Slack
+  - Zoom
+managed_uninstalls: []
+managed_updates: []

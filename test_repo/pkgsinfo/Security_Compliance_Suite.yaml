@@ -1,0 +1,262 @@
+---
+name: Security_Compliance_Suite
+display_name: Enterprise Security & Compliance Suite
+version: "2024.8.1"
+catalogs:
+  - security
+  - production
+description: |
+  Comprehensive security and compliance suite including endpoint protection,
+  data loss prevention, vulnerability management, and compliance monitoring.
+  Required for all corporate devices.
+developer: SecureCorpSolutions
+category: Security
+uninstallable: false  # Critical security software
+minimum_os_version: "12.0"
+forced_install: true
+autoremove: false
+
+# Multi-component security installation
+installer_type: metapackage
+installer_components:
+  - component_name: "Endpoint Protection"
+    package_path: "SecuritySuite/EndpointProtection.pkg"
+    required: true
+  - component_name: "Data Loss Prevention"
+    package_path: "SecuritySuite/DataLossPrevention.pkg" 
+    required: true
+  - component_name: "Vulnerability Scanner"
+    package_path: "SecuritySuite/VulnerabilityScanner.pkg"
+    required: true
+  - component_name: "Compliance Monitor"
+    package_path: "SecuritySuite/ComplianceMonitor.pkg"
+    required: false
+
+# Complex installs with system extensions
+installs:
+  - path: /Applications/Security Suite/Endpoint Protection.app
+    type: application
+    CFBundleIdentifier: com.securecorp.endpointprotection
+    CFBundleVersion: "2024.8.1.1001"
+    system_extension: true
+    team_identifier: "ABC123DEF4"
+  - path: /Library/LaunchDaemons/com.securecorp.protection.plist
+    type: plist
+    file_hash: "sha256:a1b2c3d4e5f6789..."
+  - path: /Library/SystemExtensions/com.securecorp.endpointprotection.systemextension
+    type: system_extension
+    team_identifier: "ABC123DEF4"
+    bundle_identifier: "com.securecorp.endpointprotection.extension"
+  - path: /usr/local/bin/security-scanner
+    type: file
+    md5checksum: "98765432109876543210987654321098"
+    file_mode: "0755"
+
+# Critical system requirements
+system_requirements:
+  ram_minimum_gb: 8
+  disk_space_required_gb: 5
+  network_connectivity: true
+  admin_privileges: true
+  system_integrity_protection: disabled
+  secure_boot: compatible
+
+# Extensive security dependencies
+requires:
+  - Apple_System_Extensions_Framework
+  - Enterprise_Certificate_Authority
+  - Corporate_VPN_Client
+  - Logging_Infrastructure
+
+# No applications should be running during install
+blocking_applications:
+  - Safari
+  - Chrome
+  - Firefox
+  - Microsoft Word
+  - Microsoft Excel
+  - Microsoft PowerPoint
+  - Slack
+  - Zoom
+  - Teams
+
+# Advanced pre-installation validation
+preinstall_script: |
+  #!/bin/bash
+  
+  # Validate system meets security requirements
+  echo "Validating security compliance prerequisites..."
+  
+  # Check SIP status
+  sip_status=$(csrutil status | grep -c "disabled")
+  if [ $sip_status -eq 0 ]; then
+    echo "ERROR: System Integrity Protection must be disabled"
+    echo "Please disable SIP and restart before installing security suite"
+    exit 1
+  fi
+  
+  # Verify corporate network connectivity
+  if ! ping -c 3 security.corp.internal > /dev/null 2>&1; then
+    echo "ERROR: Cannot reach corporate security infrastructure"
+    echo "Please ensure VPN connection is active"
+    exit 1
+  fi
+  
+  # Check for existing security software conflicts
+  conflicting_software=(
+    "/Applications/Norton Security.app"
+    "/Applications/McAfee Endpoint Security.app"  
+    "/Applications/Sophos Endpoint.app"
+  )
+  
+  for software in "${conflicting_software[@]}"; do
+    if [ -e "$software" ]; then
+      echo "ERROR: Conflicting security software detected: $software"
+      echo "Please remove existing security software first"
+      exit 1
+    fi
+  done
+  
+  # Validate available disk space
+  available_space=$(df -g / | tail -1 | awk '{print $4}')
+  if [ "$available_space" -lt 10 ]; then
+    echo "ERROR: Insufficient disk space. Need at least 10GB available"
+    exit 1
+  fi
+  
+  echo "Pre-installation validation completed successfully"
+
+# Complex post-installation configuration
+postinstall_script: |
+  #!/bin/bash
+  
+  # Configure security suite components
+  echo "Configuring Enterprise Security Suite..."
+  
+  # Load system extensions
+  systemextensionsctl developer on
+  systemextensionsctl activate ABC123DEF4 com.securecorp.endpointprotection.extension
+  
+  # Configure endpoint protection
+  /Applications/Security\ Suite/Endpoint\ Protection.app/Contents/MacOS/configure \
+    --server "security.corp.internal" \
+    --tenant-id "corp-tenant-12345" \
+    --policy "enterprise-strict" \
+    --auto-update true
+  
+  # Start security services
+  launchctl load /Library/LaunchDaemons/com.securecorp.protection.plist
+  launchctl load /Library/LaunchDaemons/com.securecorp.monitor.plist
+  
+  # Configure firewall rules
+  /usr/local/bin/security-scanner --configure-firewall \
+    --allow-corporate-traffic \
+    --block-suspicious-connections \
+    --enable-deep-packet-inspection
+  
+  # Set up compliance monitoring
+  /usr/local/bin/compliance-monitor \
+    --enable-file-integrity-monitoring \
+    --enable-process-monitoring \
+    --enable-network-monitoring \
+    --reporting-server "compliance.corp.internal"
+  
+  # Configure user notifications
+  defaults write /Library/Preferences/com.securecorp.notifications \
+    EnableRealTimeAlerts -bool true
+  defaults write /Library/Preferences/com.securecorp.notifications \
+    NotificationLevel -string "detailed"
+  
+  # Create security logs directory
+  mkdir -p /var/log/security-suite
+  chmod 700 /var/log/security-suite
+  chown root:wheel /var/log/security-suite
+  
+  echo "Security suite configuration completed"
+
+# Compliance and monitoring configuration
+compliance_settings:
+  file_integrity_monitoring: true
+  process_execution_monitoring: true
+  network_traffic_analysis: true
+  encryption_required: true
+  usb_device_control: strict
+  application_whitelisting: enforced
+  data_loss_prevention: maximum
+
+# Update and maintenance schedule
+update_schedule:
+  signature_updates: hourly
+  policy_updates: daily
+  software_updates: weekly
+  compliance_scans: daily
+  vulnerability_scans: weekly
+
+# Emergency response configuration
+incident_response:
+  auto_isolate_on_threat: true
+  backup_critical_logs: true
+  notify_security_team: true
+  escalation_contacts:
+    - security-team@corp.internal
+    - it-admin@corp.internal
+    - compliance@corp.internal
+
+# Detailed logging configuration
+logging_configuration:
+  log_level: detailed
+  log_retention_days: 365
+  log_destinations:
+    - local: /var/log/security-suite/
+    - remote: security-logs.corp.internal:514
+    - backup: security-backup.corp.internal:514
+  log_encryption: true
+  log_compression: true
+
+# Performance impact settings
+performance_settings:
+  cpu_usage_limit_percent: 15
+  memory_usage_limit_mb: 512
+  disk_io_priority: low
+  network_bandwidth_limit_mbps: 10
+  scan_schedule_avoid_hours:
+    - "09:00-12:00"  # Peak business hours
+    - "13:00-17:00"  # Afternoon productivity
+
+# Reporting and analytics
+reporting_configuration:
+  daily_summary_reports: true
+  weekly_compliance_reports: true
+  monthly_security_analytics: true
+  real_time_threat_alerts: true
+  executive_dashboard_updates: true
+
+# License and deployment metadata
+license_information:
+  license_type: enterprise_site
+  licensed_endpoints: 1000
+  license_expiration: "2025-12-31"
+  license_server: "licensing.corp.internal"
+  offline_grace_period_days: 30
+
+notes: |
+  CRITICAL ENTERPRISE SECURITY DEPLOYMENT
+  
+  This package installs comprehensive security and compliance monitoring
+  that is REQUIRED for all corporate devices. Installation includes:
+  
+  - Real-time endpoint protection and threat detection
+  - Data loss prevention with content inspection
+  - Vulnerability management and patch compliance
+  - File integrity and process execution monitoring
+  - Network traffic analysis and anomaly detection
+  - Compliance reporting for regulatory requirements
+  
+  IMPORTANT NOTES:
+  - Requires System Integrity Protection to be disabled
+  - May impact system performance during initial scans
+  - Cannot be uninstalled without security team approval
+  - Automatic isolation will occur on threat detection
+  - All security events are logged and monitored
+  
+  For support contact: security-support@corp.internal

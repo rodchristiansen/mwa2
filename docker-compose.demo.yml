@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  mwa2-yaml-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    container_name: mwa2-yaml-live-demo
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./test_repo:/app/test_repo:ro
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "description=MWA2 YAML Support Interactive Demo"
+      - "version=1.0"
+
+networks:
+  default:
+    name: mwa2-demo-network
